@@ -9,12 +9,16 @@ public class App : MonoBehaviour
     //-----------------------------------------------------------------------------
     public Entity templatePrefab = null;
 
+    public float separationWeight = 0.8f;
+    public float alignmentWeight = 0.5f;
+    public float cohesionWeight = 0.7f;
+
     [HideInInspector]
     public List<Entity> theFlock = new List<Entity>();
 
     public static App instance = null;
 
-    private int numberOfEntities = 20;
+    private int numberOfEntities = 300;
 
     float minRotation = 0.2f;
     float maxRotation = 0.8f;

@@ -9,18 +9,16 @@ public class Entity : MonoBehaviour
     //-----------------------------------------------------------------------------
     private float mSpeed = 1.0f;
 
-    private float mRadiusSquared = 350.0f;
+    private float mRadiusSquared = 5.0f;
 
     private int mID = 0;
-
-    private float separationWeight = 0.11f;
-    private float alignmentWeight = 0.1f;
-    private float cohesionWeight = 0.11f;
 
     private Vector3 velocity = new Vector3();
     private float maxVelocity = 1.0f;
 
     float minvelocity = 0.2f;
+
+    private float maxCubeExtent = 10.0f;
 
     //-----------------------------------------------------------------------------
     // Functions
@@ -34,6 +32,7 @@ public class Entity : MonoBehaviour
         velocity = Vector3.ClampMagnitude( velocity, maxVelocity );
     }
 
+    //-----------------------------------------------------------------------------
     void Update()
     {
         List<Entity> theFlock = App.instance.theFlock;
@@ -42,13 +41,50 @@ public class Entity : MonoBehaviour
         Vector3 cohesion = Cohere( theFlock );
         Vector3 alignment = Align( theFlock );
 
-        velocity += ( ( separation * separationWeight ) + ( cohesion * cohesionWeight ) + ( alignment * alignmentWeight ) );
+        velocity += ( ( separation * App.instance.separationWeight ) + ( cohesion * App.instance.cohesionWeight ) + ( alignment * App.instance.alignmentWeight ) );
 
         velocity = Vector3.ClampMagnitude( velocity, maxVelocity );
 
         transform.position += velocity * Time.deltaTime;
 
         transform.forward = velocity.normalized;
+
+        Reposition();
+    }
+
+    //-----------------------------------------------------------------------------
+    private void Reposition()
+    {
+        Vector3 position = transform.position;
+
+        if ( position.x > maxCubeExtent )
+        {
+            position.x = -maxCubeExtent;
+        }
+        else if ( position.x < -maxCubeExtent )
+        {
+            position.x = maxCubeExtent;
+        }
+
+        if ( position.y > maxCubeExtent )
+        {
+            position.y = -maxCubeExtent;
+        }
+        else if ( position.y < -maxCubeExtent )
+        {
+            position.y = maxCubeExtent;
+        }
+
+        if ( position.z > maxCubeExtent )
+        {
+            position.z = -maxCubeExtent;
+        }
+        else if ( position.z < -maxCubeExtent )
+        {
+            position.z = maxCubeExtent;
+        }
+
+        transform.position = position;
     }
 
     //-----------------------------------------------------------------------------
@@ -83,6 +119,11 @@ public class Entity : MonoBehaviour
             }
         }
 
+        if(count == 0)
+        {
+            return Vector3.zero;
+        }
+
         separateVector /= count;
 
         // revert vector
@@ -112,6 +153,11 @@ public class Entity : MonoBehaviour
             }
         }
 
+        if ( count == 0 )
+        {
+            return Vector3.zero;
+        }
+
         forward /= count;
 
         return forward.normalized;
@@ -136,6 +182,11 @@ public class Entity : MonoBehaviour
                     count++;
                 }
             }
+        }
+
+        if ( count == 0 )
+        {
+            return Vector3.zero;
         }
 
         cohesionVector /= count;
