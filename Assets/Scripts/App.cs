@@ -18,7 +18,7 @@ public class App : MonoBehaviour
 
     public static App instance = null;
 
-    private int numberOfEntities = 300;
+    private int numberOfEntities = 200;
 
     float minRotation = 0.2f;
     float maxRotation = 0.8f;
