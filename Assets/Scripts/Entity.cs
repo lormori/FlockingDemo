@@ -9,17 +9,31 @@ public class Entity : MonoBehaviour
     //-----------------------------------------------------------------------------
     private float mSpeed = 1.0f;
 
-    private float mRadiusSquared = 50.0f;
+    private float mRadiusSquared = 350.0f;
 
     private int mID = 0;
 
-    private float separationWeight = 0.5f;
-    private float alignmentWeight = 0.5f;
-    private float cohesionWeight = 0.5f;
+    private float separationWeight = 0.11f;
+    private float alignmentWeight = 0.1f;
+    private float cohesionWeight = 0.11f;
+
+    private Vector3 velocity = new Vector3();
+    private float maxVelocity = 1.0f;
+
+    float minvelocity = 0.2f;
 
     //-----------------------------------------------------------------------------
     // Functions
     //-----------------------------------------------------------------------------
+    void Start()
+    {
+        velocity = transform.forward;
+
+        float maxMagnitude = Random.Range( minvelocity, maxVelocity );
+
+        velocity = Vector3.ClampMagnitude( velocity, maxVelocity );
+    }
+
     void Update()
     {
         List<Entity> theFlock = App.instance.theFlock;
@@ -28,7 +42,13 @@ public class Entity : MonoBehaviour
         Vector3 cohesion = Cohere( theFlock );
         Vector3 alignment = Align( theFlock );
 
+        velocity += ( ( separation * separationWeight ) + ( cohesion * cohesionWeight ) + ( alignment * alignmentWeight ) );
 
+        velocity = Vector3.ClampMagnitude( velocity, maxVelocity );
+
+        transform.position += velocity * Time.deltaTime;
+
+        transform.forward = velocity.normalized;
     }
 
     //-----------------------------------------------------------------------------
