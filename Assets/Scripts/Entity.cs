@@ -19,6 +19,7 @@ public class Entity : MonoBehaviour
     float minvelocity = 0.2f;
 
     private float maxCubeExtent = 10.0f;
+    private float maxCubeExtentX = 20.0f;
 
     //-----------------------------------------------------------------------------
     // Functions
@@ -57,33 +58,40 @@ public class Entity : MonoBehaviour
     {
         Vector3 position = transform.position;
 
-        if ( position.x > maxCubeExtent )
+        if ( position.x >= maxCubeExtentX )
         {
-            position.x = -maxCubeExtent;
+            position.x = maxCubeExtentX - 0.2f;
+            velocity.x *= -1;
         }
-        else if ( position.x < -maxCubeExtent )
+        else if ( position.x <= -maxCubeExtentX )
         {
-            position.x = maxCubeExtent;
-        }
-
-        if ( position.y > maxCubeExtent )
-        {
-            position.y = -maxCubeExtent;
-        }
-        else if ( position.y < -maxCubeExtent )
-        {
-            position.y = maxCubeExtent;
+            position.x = -maxCubeExtentX + 0.2f;
+            velocity.x *= -1;
         }
 
-        if ( position.z > maxCubeExtent )
+        if ( position.y >= maxCubeExtent )
         {
-            position.z = -maxCubeExtent;
+            position.y = maxCubeExtent - 0.2f;
+            velocity.y *= -1;
         }
-        else if ( position.z < -maxCubeExtent )
+        else if ( position.y <= -maxCubeExtent )
         {
-            position.z = maxCubeExtent;
+            position.y = -maxCubeExtent + 0.2f;
+            velocity.y *= -1;
         }
 
+        if ( position.z >= maxCubeExtent )
+        {
+            position.z = maxCubeExtent - 0.2f;
+            velocity.z *= -1;
+        }
+        else if ( position.z <= -maxCubeExtent )
+        {
+            position.z = -maxCubeExtent + 0.2f;
+            velocity.z *= -1;
+        }
+
+        transform.forward = velocity.normalized;
         transform.position = position;
     }
 
