@@ -13,6 +13,8 @@ public class App : MonoBehaviour
     public float alignmentWeight = 0.5f;
     public float cohesionWeight = 0.7f;
 
+    public UISlidersWidget sliderWidget = null;
+
     [HideInInspector]
     public List<Entity> theFlock = new List<Entity>();
 
@@ -29,6 +31,8 @@ public class App : MonoBehaviour
     void Start ()
     {
         instance = this;
+
+        sliderWidget.Setup();
 
         InstantiateFlock();
     }
