@@ -37,12 +37,8 @@ public class Entity : MonoBehaviour
     void Update()
     {
         List<Entity> theFlock = App.instance.theFlock;
-
-        //Vector3 separation = Separate( theFlock );
-        //Vector3 cohesion = Cohere( theFlock );
-        //Vector3 alignment = Align( theFlock );
-
-        velocity += FlockingBehaviour();// ( ( separation * App.instance.separationWeight ) + ( cohesion * App.instance.cohesionWeight ) + ( alignment * App.instance.alignmentWeight ) );
+        
+        velocity += FlockingBehaviour();
 
         velocity = Vector3.ClampMagnitude( velocity, maxVelocity );
 
@@ -109,100 +105,6 @@ public class Entity : MonoBehaviour
 
     //-----------------------------------------------------------------------------
     // Flocking Behavior
-    //-----------------------------------------------------------------------------
-    private Vector3 Separate( List<Entity> theFlock )
-    {
-        Vector3 separateVector = new Vector3();
-
-        int count = 0;
-
-        for(int i = 0; i < theFlock.Count; i++)
-        {
-            float distance = ( transform.position - theFlock[ i ].transform.position ).sqrMagnitude;
-
-            if(distance > 0 && distance < mRadiusSquared)
-            {
-                separateVector += theFlock[ i ].transform.position - transform.position;
-                count++;
-            }
-        }
-
-        if(count == 0)
-        {
-            return Vector3.zero;
-        }
-
-        separateVector /= count;
-
-        // revert vector
-        separateVector *= -1;
-
-        return separateVector.normalized;
-    }
-
-    //-----------------------------------------------------------------------------
-    private Vector3 Align( List<Entity> theFlock )
-    {
-        Vector3 forward = new Vector3();
-
-        int count = 0;
-
-        for ( int i = 0; i < theFlock.Count; i++ )
-        {
-            if(mID != theFlock [i].ID)
-            {
-                float distance = ( transform.position - theFlock[ i ].transform.position ).sqrMagnitude;
-
-                if ( distance > 0 && distance < mRadiusSquared )
-                {
-                    forward += theFlock[ i ].transform.forward;
-                    count++;
-                }
-            }
-        }
-
-        if ( count == 0 )
-        {
-            return Vector3.zero;
-        }
-
-        forward /= count;
-
-        return forward.normalized;
-    }
-
-    //-----------------------------------------------------------------------------
-    private Vector3 Cohere( List<Entity> theFlock )
-    {
-        Vector3 cohesionVector = new Vector3();
-
-        int count = 0;
-
-        for ( int i = 0; i < theFlock.Count; i++ )
-        {
-            if ( mID != theFlock[ i ].ID )
-            {
-                float distance = ( transform.position - theFlock[ i ].transform.position ).sqrMagnitude;
-
-                if ( distance > 0 && distance < mRadiusSquared )
-                {
-                    cohesionVector += theFlock[ i ].transform.position;
-                    count++;
-                }
-            }
-        }
-
-        if ( count == 0 )
-        {
-            return Vector3.zero;
-        }
-
-        cohesionVector /= count;
-        cohesionVector = ( cohesionVector - transform.position );
-
-        return cohesionVector.normalized;
-    }
-
     //-----------------------------------------------------------------------------
     private Vector3 FlockingBehaviour()
     {
