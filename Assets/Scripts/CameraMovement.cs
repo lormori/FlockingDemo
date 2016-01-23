@@ -24,7 +24,7 @@ public class CameraMovement : MonoBehaviour
         UpdateMouseMovement();
 
         UpdateKeyPressed();
-	}
+    }
 
     private void UpdateKeyPressed()
     {

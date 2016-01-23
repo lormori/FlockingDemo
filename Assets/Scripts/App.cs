@@ -52,10 +52,4 @@ public class App : MonoBehaviour
             theFlock.Add( flockEntity );
         }
     }
-
-    //-----------------------------------------------------------------------------
-	void Update()
-    {
-	
-	}
 }

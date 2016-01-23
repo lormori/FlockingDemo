@@ -38,11 +38,11 @@ public class Entity : MonoBehaviour
     {
         List<Entity> theFlock = App.instance.theFlock;
 
-        Vector3 separation = Separate( theFlock );
-        Vector3 cohesion = Cohere( theFlock );
-        Vector3 alignment = Align( theFlock );
+        //Vector3 separation = Separate( theFlock );
+        //Vector3 cohesion = Cohere( theFlock );
+        //Vector3 alignment = Align( theFlock );
 
-        velocity += ( ( separation * App.instance.separationWeight ) + ( cohesion * App.instance.cohesionWeight ) + ( alignment * App.instance.alignmentWeight ) );
+        velocity += FlockingBehaviour();// ( ( separation * App.instance.separationWeight ) + ( cohesion * App.instance.cohesionWeight ) + ( alignment * App.instance.alignmentWeight ) );
 
         velocity = Vector3.ClampMagnitude( velocity, maxVelocity );
 
@@ -201,5 +201,57 @@ public class Entity : MonoBehaviour
         cohesionVector = ( cohesionVector - transform.position );
 
         return cohesionVector.normalized;
+    }
+
+    //-----------------------------------------------------------------------------
+    private Vector3 FlockingBehaviour()
+    {
+        List<Entity> theFlock = App.instance.theFlock;
+
+        Vector3 cohesionVector = new Vector3();
+        Vector3 separateVector = new Vector3();
+        Vector3 forward = new Vector3();
+
+        int count = 0;
+
+        for ( int i = 0; i < theFlock.Count; i++ )
+        {
+            if ( mID != theFlock[ i ].ID )
+            {
+                float distance = ( transform.position - theFlock[ i ].transform.position ).sqrMagnitude;
+
+                if ( distance > 0 && distance < mRadiusSquared )
+                {
+                    separateVector += theFlock[ i ].transform.position - transform.position;
+                    forward += theFlock[ i ].transform.forward;
+                    cohesionVector += theFlock[ i ].transform.position;
+
+                    count++;
+                }
+            }
+        }
+
+        if ( count == 0 )
+        {
+            return Vector3.zero;
+        }
+
+        // revert vector
+        // separation step
+        separateVector /= count;
+        separateVector *= -1;
+
+        // forward step
+        forward /= count;
+
+        // cohesione step
+        cohesionVector /= count;
+        cohesionVector = ( cohesionVector - transform.position );
+
+        Vector3 flockingVector =    ( ( separateVector.normalized * App.instance.separationWeight ) + 
+                                    ( cohesionVector.normalized * App.instance.cohesionWeight ) + 
+                                    ( forward.normalized * App.instance.alignmentWeight ) );
+
+        return flockingVector;
     }
 }
