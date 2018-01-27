@@ -46,34 +46,34 @@ public class Entity : MonoBehaviour
     {
         Vector3 position = transform.position;
 
-        if ( position.x >= mMaxCubeExtentX )
+        if( position.x >= mMaxCubeExtentX )
         {
             position.x = mMaxCubeExtentX - 0.2f;
             mVelocity.x *= -1;
         }
-        else if ( position.x <= -mMaxCubeExtentX )
+        else if( position.x <= -mMaxCubeExtentX )
         {
             position.x = -mMaxCubeExtentX + 0.2f;
             mVelocity.x *= -1;
         }
 
-        if ( position.y >= mMaxCubeExtent )
+        if( position.y >= mMaxCubeExtent )
         {
             position.y = mMaxCubeExtent - 0.2f;
             mVelocity.y *= -1;
         }
-        else if ( position.y <= -mMaxCubeExtent )
+        else if( position.y <= -mMaxCubeExtent )
         {
             position.y = -mMaxCubeExtent + 0.2f;
             mVelocity.y *= -1;
         }
 
-        if ( position.z >= mMaxCubeExtent )
+        if( position.z >= mMaxCubeExtent )
         {
             position.z = mMaxCubeExtent - 0.2f;
             mVelocity.z *= -1;
         }
-        else if ( position.z <= -mMaxCubeExtent )
+        else if( position.z <= -mMaxCubeExtent )
         {
             position.z = -mMaxCubeExtent + 0.2f;
             mVelocity.z *= -1;
@@ -104,13 +104,13 @@ public class Entity : MonoBehaviour
 
         Vector3 cohesionVector = new Vector3();
         Vector3 separateVector = new Vector3();
-        Vector3 forwardVector = new Vector3();
+        Vector3 alignmentVector = new Vector3();
 
         int count = 0;
 
-        for ( int index = 0; index < theFlock.Count; index++ )
+        for( int index = 0; index < theFlock.Count; index++ )
         {
-            if ( mID != theFlock[ index ].ID )
+            if( mID != theFlock[ index ].ID )
             {
                 float distance = ( transform.position - theFlock[ index ].transform.position ).sqrMagnitude;
 
@@ -118,14 +118,14 @@ public class Entity : MonoBehaviour
                 {
                     cohesionVector += theFlock[ index ].transform.position;
                     separateVector += theFlock[ index ].transform.position - transform.position;
-                    forwardVector += theFlock[ index ].transform.forward;
+                    alignmentVector += theFlock[ index ].transform.forward;
 
                     count++;
                 }
             }
         }
 
-        if ( count == 0 )
+        if( count == 0 )
         {
             return Vector3.zero;
         }
@@ -136,15 +136,16 @@ public class Entity : MonoBehaviour
         separateVector *= -1;
 
         // forward step
-        forwardVector /= count;
+        alignmentVector /= count;
 
         // cohesione step
         cohesionVector /= count;
         cohesionVector = ( cohesionVector - transform.position );
 
-        Vector3 flockingVector =    ( ( separateVector.normalized * App.instance.separationWeight ) + 
-                                    ( cohesionVector.normalized * App.instance.cohesionWeight ) + 
-                                    ( forwardVector.normalized * App.instance.alignmentWeight ) );
+        // Add All vectors together to get flocking
+        Vector3 flockingVector = ( ( separateVector.normalized * App.instance.separationWeight ) +
+                                    ( cohesionVector.normalized * App.instance.cohesionWeight ) +
+                                    ( alignmentVector.normalized * App.instance.alignmentWeight ) );
 
         return flockingVector;
     }
