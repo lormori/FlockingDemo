@@ -5,46 +5,38 @@ using System.Collections.Generic;
 public class Entity : MonoBehaviour
 {
     //-----------------------------------------------------------------------------
+    // Const Data
+    //-----------------------------------------------------------------------------
+    private static readonly float mRadiusSquaredDistance = 5.0f;
+    private static readonly float mMaxVelocity = 1.0f;
+    private static readonly float mMaxCubeExtent = 10.0f;
+    private static readonly float mMaxCubeExtentX = 20.0f;
+
+    //-----------------------------------------------------------------------------
     // Data
     //-----------------------------------------------------------------------------
-    private float mSpeed = 1.0f;
-
-    private float mRadiusSquared = 5.0f;
-
     private int mID = 0;
-
-    private Vector3 velocity = new Vector3();
-    private float maxVelocity = 1.0f;
-
-    float minvelocity = 0.2f;
-
-    private float maxCubeExtent = 10.0f;
-    private float maxCubeExtentX = 20.0f;
+    private Vector3 mVelocity = new Vector3();
 
     //-----------------------------------------------------------------------------
     // Functions
     //-----------------------------------------------------------------------------
     void Start()
     {
-        velocity = transform.forward;
-
-        float maxMagnitude = Random.Range( minvelocity, maxVelocity );
-
-        velocity = Vector3.ClampMagnitude( velocity, maxVelocity );
+        mVelocity = transform.forward;
+        mVelocity = Vector3.ClampMagnitude( mVelocity, mMaxVelocity );
     }
 
     //-----------------------------------------------------------------------------
     void Update()
     {
-        List<Entity> theFlock = App.instance.theFlock;
-        
-        velocity += FlockingBehaviour();
+        mVelocity += FlockingBehaviour();
 
-        velocity = Vector3.ClampMagnitude( velocity, maxVelocity );
+        mVelocity = Vector3.ClampMagnitude( mVelocity, mMaxVelocity );
 
-        transform.position += velocity * Time.deltaTime;
+        transform.position += mVelocity * Time.deltaTime;
 
-        transform.forward = velocity.normalized;
+        transform.forward = mVelocity.normalized;
 
         Reposition();
     }
@@ -54,40 +46,40 @@ public class Entity : MonoBehaviour
     {
         Vector3 position = transform.position;
 
-        if ( position.x >= maxCubeExtentX )
+        if ( position.x >= mMaxCubeExtentX )
         {
-            position.x = maxCubeExtentX - 0.2f;
-            velocity.x *= -1;
+            position.x = mMaxCubeExtentX - 0.2f;
+            mVelocity.x *= -1;
         }
-        else if ( position.x <= -maxCubeExtentX )
+        else if ( position.x <= -mMaxCubeExtentX )
         {
-            position.x = -maxCubeExtentX + 0.2f;
-            velocity.x *= -1;
-        }
-
-        if ( position.y >= maxCubeExtent )
-        {
-            position.y = maxCubeExtent - 0.2f;
-            velocity.y *= -1;
-        }
-        else if ( position.y <= -maxCubeExtent )
-        {
-            position.y = -maxCubeExtent + 0.2f;
-            velocity.y *= -1;
+            position.x = -mMaxCubeExtentX + 0.2f;
+            mVelocity.x *= -1;
         }
 
-        if ( position.z >= maxCubeExtent )
+        if ( position.y >= mMaxCubeExtent )
         {
-            position.z = maxCubeExtent - 0.2f;
-            velocity.z *= -1;
+            position.y = mMaxCubeExtent - 0.2f;
+            mVelocity.y *= -1;
         }
-        else if ( position.z <= -maxCubeExtent )
+        else if ( position.y <= -mMaxCubeExtent )
         {
-            position.z = -maxCubeExtent + 0.2f;
-            velocity.z *= -1;
+            position.y = -mMaxCubeExtent + 0.2f;
+            mVelocity.y *= -1;
         }
 
-        transform.forward = velocity.normalized;
+        if ( position.z >= mMaxCubeExtent )
+        {
+            position.z = mMaxCubeExtent - 0.2f;
+            mVelocity.z *= -1;
+        }
+        else if ( position.z <= -mMaxCubeExtent )
+        {
+            position.z = -mMaxCubeExtent + 0.2f;
+            mVelocity.z *= -1;
+        }
+
+        transform.forward = mVelocity.normalized;
         transform.position = position;
     }
 
@@ -112,21 +104,21 @@ public class Entity : MonoBehaviour
 
         Vector3 cohesionVector = new Vector3();
         Vector3 separateVector = new Vector3();
-        Vector3 forward = new Vector3();
+        Vector3 forwardVector = new Vector3();
 
         int count = 0;
 
-        for ( int i = 0; i < theFlock.Count; i++ )
+        for ( int index = 0; index < theFlock.Count; index++ )
         {
-            if ( mID != theFlock[ i ].ID )
+            if ( mID != theFlock[ index ].ID )
             {
-                float distance = ( transform.position - theFlock[ i ].transform.position ).sqrMagnitude;
+                float distance = ( transform.position - theFlock[ index ].transform.position ).sqrMagnitude;
 
-                if ( distance > 0 && distance < mRadiusSquared )
+                if( distance > 0 && distance < mRadiusSquaredDistance )
                 {
-                    separateVector += theFlock[ i ].transform.position - transform.position;
-                    forward += theFlock[ i ].transform.forward;
-                    cohesionVector += theFlock[ i ].transform.position;
+                    cohesionVector += theFlock[ index ].transform.position;
+                    separateVector += theFlock[ index ].transform.position - transform.position;
+                    forwardVector += theFlock[ index ].transform.forward;
 
                     count++;
                 }
@@ -144,7 +136,7 @@ public class Entity : MonoBehaviour
         separateVector *= -1;
 
         // forward step
-        forward /= count;
+        forwardVector /= count;
 
         // cohesione step
         cohesionVector /= count;
@@ -152,7 +144,7 @@ public class Entity : MonoBehaviour
 
         Vector3 flockingVector =    ( ( separateVector.normalized * App.instance.separationWeight ) + 
                                     ( cohesionVector.normalized * App.instance.cohesionWeight ) + 
-                                    ( forward.normalized * App.instance.alignmentWeight ) );
+                                    ( forwardVector.normalized * App.instance.alignmentWeight ) );
 
         return flockingVector;
     }

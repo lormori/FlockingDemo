@@ -5,6 +5,11 @@ using System.Collections.Generic;
 public class App : MonoBehaviour
 {
     //-----------------------------------------------------------------------------
+    // Const Data
+    //-----------------------------------------------------------------------------
+    private static readonly int mNumberOfEntities = 200;
+    
+    //-----------------------------------------------------------------------------
     // Data
     //-----------------------------------------------------------------------------
     public Entity templatePrefab = null;
@@ -15,15 +20,9 @@ public class App : MonoBehaviour
 
     public UISlidersWidget sliderWidget = null;
 
-    [HideInInspector]
-    public List<Entity> theFlock = new List<Entity>();
-
     public static App instance = null;
 
-    private int numberOfEntities = 200;
-
-    float minRotation = 0.2f;
-    float maxRotation = 0.8f;
+    private List<Entity> mTheFlock = new List<Entity>();
 
     //-----------------------------------------------------------------------------
     // Functions
@@ -40,16 +39,21 @@ public class App : MonoBehaviour
     //-----------------------------------------------------------------------------
     private void InstantiateFlock()
     {
-        for ( int i = 0; i < numberOfEntities; i++ )
+        for ( int i = 0; i < mNumberOfEntities; i++ )
         {
             Entity flockEntity = Instantiate( templatePrefab );
 
             flockEntity.transform.rotation = Random.rotation;
-            //lnew Vector3( Random.Range( minRotation, maxRotation ), Random.Range( minRotation, maxRotation ), Random.Range( minRotation, maxRotation ) );
 
             flockEntity.SetID( i );
 
-            theFlock.Add( flockEntity );
+            mTheFlock.Add( flockEntity );
         }
+    }
+
+    //-----------------------------------------------------------------------------
+    public List<Entity> theFlock
+    {
+        get { return mTheFlock; }
     }
 }
